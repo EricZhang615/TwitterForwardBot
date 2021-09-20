@@ -47,8 +47,7 @@ class TwitterUser(twint.config.Config):
         else:
             if self.recentTweet == []:
                 for t in self.newTweet:
-                    if t['id'] > self.recentTweet[0]['id']:
-                        m_list.append(t['name'] + ': https://twitter.com/' + t['username'] + '/status/' + str(t['id']))
+                    m_list.append(t['name'] + ': https://twitter.com/' + t['username'] + '/status/' + str(t['id']))
             else:
                 if self.recentTweet[0]['id'] >= self.newTweet[0]['id']:
                     return m_list
@@ -75,7 +74,7 @@ if __name__ == '__main__':
     with open('settings.json', 'r', encoding='utf-8') as f:
         p = json.load(f)
     bot = telebot.TeleBot(p["token"])
-    bot.polling()
+    # bot.polling()
     print('settings loaded')
     # load users data
     with open('users.json', 'r', encoding='utf-8') as f:
