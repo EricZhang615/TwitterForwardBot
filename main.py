@@ -76,11 +76,14 @@ if __name__ == '__main__':
         p = json.load(f)
     bot = telebot.TeleBot(p["token"])
     bot.polling()
+    print('settings loaded')
     # load users data
     with open('users.json', 'r', encoding='utf-8') as f:
         users = json.load(f)
+    print('users data loaded')
     # initial
     twitter_user_list = [TwitterUser(k, v) for k, v in users.items()]
+    print('init finished')
     for u in twitter_user_list:
         pull_and_send(u)
 
