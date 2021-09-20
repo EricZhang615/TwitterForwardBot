@@ -77,16 +77,18 @@ if __name__ == '__main__':
         users = json.load(f)
     # initial
     twitter_user_list = [TwitterUser(k, v) for k, v in users.items()]
+    for u in twitter_user_list:
+        pull_and_send(u)
 
-    def job():
-        for u in twitter_user_list:
-            pull_and_send(u)
-
-    schedule.every(20).seconds.do(job)
-
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # def job():
+    #     for u in twitter_user_list:
+    #         pull_and_send(u)
+    #
+    # schedule.every(20).seconds.do(job)
+    #
+    # while True:
+    #     schedule.run_pending()
+    #     time.sleep(1)
 
 
     # s = time()
