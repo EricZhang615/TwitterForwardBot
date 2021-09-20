@@ -61,7 +61,9 @@ class TwitterUser(twint.config.Config):
 
 def pull_and_send(user: TwitterUser):
     user.get_recent_tweet()
+    print(user.recentTweet)
     user.get_new_tweet()
+    print(user.newTweet)
     for m in user.message_list():
         bot.send_message(p["chat_id"], m)
 
