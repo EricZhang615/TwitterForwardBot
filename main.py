@@ -1,28 +1,95 @@
-# 这是一个示例 Python 脚本。
 
-# 按 ⌃R 执行或将其替换为您的代码。
-# 按 双击 ⇧ 在所有地方搜索类、文件、工具窗口、操作和设置。
-import requests
-from time import time
-
-def print_hi(name):
-    # 在下面的代码行中使用断点来调试脚本。
-    print(f'Hi, {name}')  # 按 ⌘F8 切换断点。
+import os
+import json
+import twint
+import time
+import telebot
+import schedule
 
 
-# 按间距中的绿色按钮以运行脚本。
+class TwitterUser(twint.config.Config):
+    def __init__(self, name, username):
+        self.name = str(name)
+        self.recentTweet = []
+        self.newTweet = []
+        self.Username = str(username)
+        self.Since = ''
+        self.Limit = 1
+        self.Output = 'tweets/' + self.name + '.json'
+        self.Store_json = True
+        # self.Custom["tweet"] = ["name", "id"]
+        with open(self.Output, 'w') as f:
+            pass
+
+    def get_recent_tweet(self):
+        self.recentTweet = []
+        if os.path.getsize(self.Output) != 0:
+            with open(self.Output, 'r+') as f:
+                for line in f.readlines():
+                    self.recentTweet.append(json.loads(line.strip()))
+                f.truncate()
+        return 0
+
+    def get_new_tweet(self):
+        self.Since = time.strftime("%Y-%m-%d", time.localtime())
+        twint.run.Profile(self)
+        self.newTweet = []
+        if os.path.getsize(self.Output) != 0:
+            with open(self.Output, 'r+') as f:
+                for line in f.readlines():
+                    self.newTweet.append(json.loads(line.strip()))
+        return 0
+
+    def message_list(self):
+        m_list = []
+        if self.newTweet == []:
+            return m_list
+        else:
+            if self.recentTweet == []:
+                for t in self.newTweet:
+                    if t['id'] > self.recentTweet[0]['id']:
+                        m_list.append(t['name'] + ': https://twitter.com/' + t['username'] + '/status/' + str(t['id']))
+            else:
+                if self.recentTweet[0]['id'] >= self.newTweet[0]['id']:
+                    return m_list
+                else:
+                    for t in self.newTweet:
+                        if t['id'] > self.recentTweet[0]['id']:
+                            m_list.append(t['name'] + ': https://twitter.com/' + t['username'] + '/status/' + str(t['id']))
+        return m_list
+
+
+def pull_and_send(user: TwitterUser):
+    user.get_recent_tweet()
+    user.get_new_tweet()
+    for m in user.message_list():
+        bot.send_message(p["chat_id"], m)
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    # load settings
+    with open('settings.json', 'r', encoding='utf-8') as f:
+        p = json.load(f)
+    bot = telebot.TeleBot(p["token"])
+    bot.polling()
+    # load users data
+    with open('users.json', 'r', encoding='utf-8') as f:
+        users = json.load(f)
+    # initial
+    twitter_user_list = [TwitterUser(k, v) for k, v in users.items()]
 
-    s = time()
+    def job():
+        for u in twitter_user_list:
+            pull_and_send(u)
 
-    _timeout = 25
-    url = 'https://twitter.com'
-    _session = requests.Session()
-    req = _session.prepare_request(requests.Request('GET', url))
-    r = _session.send(req, allow_redirects=True, timeout=_timeout)
+    schedule.every(20).seconds.do(job)
 
-    run_time = time() - s
-    print(f'Status Code : {r.status_code}')
-    print(f'Request Took {run_time} ms')
-# 访问 https://www.jetbrains.com/help/pycharm/ 获取 PyCharm 帮助
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+
+    # s = time()
+    #
+    # run_time = time() - s
+    # print(f'Request Took {run_time} ms')
