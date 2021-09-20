@@ -17,7 +17,7 @@ class TwitterUser(twint.config.Config):
         self.Limit = 1
         self.Output = 'tweets/' + self.name + '.json'
         self.Store_json = True
-        # self.Custom["tweet"] = ["name", "id"]
+        self.Custom["tweet"] = ["name", "id", "username"]
         with open(self.Output, 'w') as f:
             pass
 
@@ -61,8 +61,10 @@ class TwitterUser(twint.config.Config):
 
 def pull_and_send(user: TwitterUser):
     user.get_recent_tweet()
+    print('get_recent_tweet()')
     print(user.recentTweet)
     user.get_new_tweet()
+    print('get_new_tweet()')
     print(user.newTweet)
     for m in user.message_list():
         bot.send_message(p["chat_id"], m)
