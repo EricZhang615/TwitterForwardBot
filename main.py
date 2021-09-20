@@ -28,6 +28,7 @@ class TwitterUser(twint.config.Config):
             with open(self.Output, 'r+') as f:
                 for line in f.readlines():
                     self.recentTweet.append(json.loads(line.strip()))
+                f.seek(0)
                 f.truncate()
         return 0
 
