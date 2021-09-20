@@ -62,10 +62,10 @@ class TwitterUser(twint.config.Config):
 
 def pull_and_send(user: TwitterUser):
     user.get_recent_tweet()
-    print('get_recent_tweet()')
+    # print('get_recent_tweet()')
     # print(user.recentTweet)
     user.get_new_tweet()
-    print('get_new_tweet()')
+    # print('get_new_tweet()')
     # print(user.newTweet)
     for m in user.message_list():
         bot.send_message(p["chat_id"], m)
@@ -77,26 +77,21 @@ if __name__ == '__main__':
         p = json.load(f)
     bot = telebot.TeleBot(p["token"])
     # bot.polling()
-    print('settings loaded')
     # load users data
     with open('users.json', 'r', encoding='utf-8') as f:
         users = json.load(f)
-    print('users data loaded')
     # initial
     twitter_user_list = [TwitterUser(k, v) for k, v in users.items()]
-    print('init finished')
-    for u in twitter_user_list:
-        pull_and_send(u)
 
-    # def job():
-    #     for u in twitter_user_list:
-    #         pull_and_send(u)
-    #
-    # schedule.every(20).seconds.do(job)
-    #
-    # while True:
-    #     schedule.run_pending()
-    #     time.sleep(1)
+    def job():
+        for u in twitter_user_list:
+            pull_and_send(u)
+
+    schedule.every(10).seconds.do(job)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 
     # s = time()
