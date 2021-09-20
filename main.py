@@ -18,6 +18,7 @@ class TwitterUser(twint.config.Config):
         self.Output = 'tweets/' + self.name + '.json'
         self.Store_json = True
         self.Custom["tweet"] = ["name", "id", "username"]
+        self.Hide_output = True
         if not os.path.exists(self.Output):
             with open(self.Output, 'w') as f:
                 pass
