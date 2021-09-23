@@ -15,33 +15,21 @@ class TwitterUser(twint.config.Config):
         self.Username = str(username)
         self.Since = ''
         self.Limit = 1
-        self.Output = 'tweets/' + self.name + '.json'
-        self.Store_json = True
-        self.Custom["tweet"] = ["name", "id", "username"]
+        # self.Output = 'tweets/' + self.name + '.json'
+        # self.Store_json = True
+        # self.Custom["tweet"] = ["name", "id", "username"]
+        self.Store_object = True
+        self.Store_object_tweets_list = self.newTweet
         self.Hide_output = True
-        if not os.path.exists(self.Output):
-            with open(self.Output, 'w') as f:
-                pass
 
     def get_recent_tweet(self):
-        self.recentTweet = []
-        if os.path.getsize(self.Output) != 0:
-            with open(self.Output, 'r+') as f:
-                for line in f.readlines():
-                    self.recentTweet.append(json.loads(line.strip()))
-                f.seek(0)
-                f.truncate()
-        return 0
+        self.recentTweet = self.newTweet
 
     def get_new_tweet(self):
+        self.newTweet = []
+        self.Store_object_tweets_list = self.newTweet
         self.Since = time.strftime("%Y-%m-%d", time.localtime())
         twint.run.Profile(self)
-        self.newTweet = []
-        if os.path.getsize(self.Output) != 0:
-            with open(self.Output, 'r+') as f:
-                for line in f.readlines():
-                    self.newTweet.append(json.loads(line.strip()))
-        return 0
 
     def message_list(self):
         m_list = []
@@ -50,14 +38,16 @@ class TwitterUser(twint.config.Config):
         else:
             if self.recentTweet == []:
                 for t in self.newTweet:
-                    m_list.append(t['name'] + ': https://twitter.com/' + t['username'] + '/status/' + str(t['id']))
+                    m_list.append(t.name + ': https://twitter.com/' + t.username + '/status/' + str(t.id))
             else:
-                if self.recentTweet[0]['id'] >= self.newTweet[0]['id']:
+                if self.recentTweet[0].id >= self.newTweet[0].id:
                     return m_list
                 else:
                     for t in self.newTweet:
-                        if t['id'] > self.recentTweet[0]['id']:
-                            m_list.append(t['name'] + ': https://twitter.com/' + t['username'] + '/status/' + str(t['id']))
+                        if t.id > self.recentTweet[0].id:
+                            m_list.append(t.name + ': https://twitter.com/' + t.username + '/status/' + str(t.id))
+                        else:
+                            break
         return m_list
 
 
