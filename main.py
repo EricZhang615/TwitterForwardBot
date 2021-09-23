@@ -88,7 +88,15 @@ if __name__ == '__main__':
         for u in twitter_user_list:
             pull_and_send(u)
 
+    def refresh_user_list():
+        global twitter_user_list
+        with open('users.json', 'r', encoding='utf-8') as f:
+            ref_users = json.load(f)
+        if not ref_users == users:
+            twitter_user_list = [TwitterUser(k, v) for k, v in ref_users.items()]
+
     schedule.every(10).seconds.do(job)
+    schedule.every(10).minutes.do(refresh_user_list)
 
     while True:
         schedule.run_pending()
