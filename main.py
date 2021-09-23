@@ -41,14 +41,14 @@ class TwitterUser(twint.config.Config):
         else:
             if self.recentTweet == []:
                 for t in self.newTweet:
-                    m_list.append(t.name + ': ' + t.tweet[:30] + '... https://twitter.com/' + t.username + '/status/' + str(t.id))
+                    m_list.append(t.name + ': ' + t.tweet[:40] + '... https://twitter.com/' + t.username + '/status/' + str(t.id))
             else:
                 if self.recentTweet[0].id >= self.newTweet[0].id:
                     return m_list
                 else:
                     for t in self.newTweet:
                         if t.id > self.recentTweet[0].id:
-                            m_list.append(t.name + ': ' + t.tweet[:30] + '... https://twitter.com/' + t.username + '/status/' + str(t.id))
+                            m_list.append(t.name + ': ' + t.tweet[:40] + '... https://twitter.com/' + t.username + '/status/' + str(t.id))
                         else:
                             break
         return m_list
