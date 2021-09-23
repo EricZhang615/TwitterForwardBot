@@ -21,6 +21,9 @@ class TwitterUser(twint.config.Config):
         self.Store_object = True
         self.Store_object_tweets_list = self.newTweet
         self.Hide_output = True
+        # init pull
+        self.Since = time.strftime("%Y-%m-%d", time.localtime())
+        twint.run.Profile(self)
 
     def get_recent_tweet(self):
         self.recentTweet = self.newTweet
