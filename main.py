@@ -2,6 +2,7 @@
 
 import json
 import twint
+import twint.token
 import time
 import telebot
 import schedule
@@ -23,7 +24,10 @@ class TwitterUser(twint.config.Config):
         self.Hide_output = True
         # init pull
         self.Since = time.strftime("%Y-%m-%d", time.localtime())
-        twint.run.Profile(self)
+        try:
+            twint.run.Profile(self)
+        except twint.token.RefreshTokenException as e:
+            print("TokenException:", e)
 
     def get_recent_tweet(self):
         self.recentTweet = self.newTweet
@@ -32,7 +36,10 @@ class TwitterUser(twint.config.Config):
         self.newTweet = []
         self.Store_object_tweets_list = self.newTweet
         self.Since = time.strftime("%Y-%m-%d", time.localtime())
-        twint.run.Profile(self)
+        try:
+            twint.run.Profile(self)
+        except twint.token.RefreshTokenException as e:
+            print("TokenException:", e)
 
     def message_list(self):
         m_list = []
@@ -88,7 +95,7 @@ if __name__ == '__main__':
         if not ref_users == users:
             twitter_user_list = [TwitterUser(k, v) for k, v in ref_users.items()]
 
-    schedule.every(10).seconds.do(job)
+    schedule.every(30).seconds.do(job)
     schedule.every(10).minutes.do(refresh_user_list)
 
     while True:
