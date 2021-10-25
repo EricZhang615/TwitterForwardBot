@@ -33,13 +33,15 @@ class TwitterUser(twint.config.Config):
         self.recentTweet = self.newTweet
 
     def get_new_tweet(self):
+        t = self.newTweet
         self.newTweet = []
         self.Store_object_tweets_list = self.newTweet
         self.Since = time.strftime("%Y-%m-%d", time.localtime())
         try:
             twint.run.Profile(self)
-        except twint.token.RefreshTokenException as e:
+        except BaseException as e:
             print("TokenException:", e)
+            self.newTweet = t
 
     def message_list(self):
         m_list = []
@@ -77,10 +79,12 @@ if __name__ == '__main__':
     with open('settings.json', 'r', encoding='utf-8') as f:
         p = json.load(f)
     bot = telebot.TeleBot(p["token"])
+    print("load settings complete")
     # bot.polling()
     # load users data
     with open('users.json', 'r', encoding='utf-8') as f:
         users = json.load(f)
+    print("load user data complete")
     # initial
     twitter_user_list = [TwitterUser(k, v) for k, v in users.items()]
 
