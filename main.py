@@ -28,6 +28,8 @@ class TwitterUser(twint.config.Config):
             twint.run.Profile(self)
         except twint.token.RefreshTokenException as e:
             print("TokenException:", e)
+        except Exception as e:
+            print("Exception:", e)
 
     def get_recent_tweet(self):
         self.recentTweet = self.newTweet
@@ -39,8 +41,10 @@ class TwitterUser(twint.config.Config):
         self.Since = time.strftime("%Y-%m-%d", time.localtime())
         try:
             twint.run.Profile(self)
-        except BaseException as e:
+        except twint.token.RefreshTokenException as e:
             print("TokenException:", e)
+        except Exception as e:
+            print("Exception:", e)
             self.newTweet = t
 
     def message_list(self):
